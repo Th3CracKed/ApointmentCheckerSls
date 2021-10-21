@@ -12,6 +12,14 @@ const checker = async (browser: Browser) => {
   const url = "http://www.isere.gouv.fr/booking/create/14544";
   let foundSchedule = false
   const page = await browser.newPage();
+  await page.setRequestInterception(true)
+  page.on('request', (request) => {
+    if (['image', 'stylesheet', 'font', 'other'].includes(request.resourceType())) {
+      request.abort();
+    } else {
+      request.continue();
+    }
+  });
   try {
     console.log(`Visiting ${url}`);
     await page.goto(url, { waitUntil: 'networkidle0' });
