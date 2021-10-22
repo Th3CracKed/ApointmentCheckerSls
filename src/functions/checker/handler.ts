@@ -27,23 +27,26 @@ const checker = async (browser: Browser) => {
     console.log(`${url} loaded Successfully`);
     await page.waitForSelector("#condition");
     const condition = await page.$('#condition');
-    condition.click();
+    await condition.click();
     await page.waitForTimeout(1000);
-    console.log(`condition accepted`);
+    console.log(`Condition accepted`);
     await waitForNavigation(page, 10000, 'input[name="nextButton"]');
     const nextButton = await page.$('input[name="nextButton"]');
-    nextButton.click();
+    await nextButton.click();
     console.log(`nextButton clicked`);
     await ignoreUnsecuredConnection(page, '#fchoix_Booking', '#planning35227').catch(console.log);
     await waitForNavigation(page, 10000, '#planning35227');
     console.log(`DEMANDE DE RENDEZ-VOUS loaded Successfully`);
     const matinOption = await page.$('#planning35227');
     // const apresMidiOption = await page.$('#planning35228');
-    matinOption.click();
+    await matinOption.click();
+    console.log('Clicked on Matin button');
     await page.waitForTimeout(1000);
     const firstStepNextButton = await page.$('input[name="nextButton"]');
-    firstStepNextButton.click();
+    await firstStepNextButton.click();
+    console.log('Clicked on nextButton');
     await ignoreUnsecuredConnection(page).catch(console.log);
+    console.log('Checking If Text Exists In A Page...');
     const noSchedule = await checkIfTextExistsInAPage(page, `Il n'existe plus de plage horaire libre pour votre demande de rendez-vous. Veuillez recommencer ultérieurement.`);
     foundSchedule = !noSchedule;
     const response = JSON.stringify({ foundSchedule });
@@ -57,6 +60,8 @@ const checker = async (browser: Browser) => {
   } catch (err) {
     console.log('Chaining error');
     console.log(err);
+    // TODO take screenshot
+    // TODO dump html to s3
     return formatErrorJSONResponse(JSON.stringify({ err }));
   } finally {
     page.close();
